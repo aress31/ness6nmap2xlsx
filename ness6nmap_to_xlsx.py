@@ -207,7 +207,7 @@ def write_worksheet(workbook, worksheet, freeze_panes_count,
             worksheet.freeze_panes(0, i + 1)
 
 
-def parse_host_vulns(workbook, scanner, scans, config_file=None):
+def write_host_vulns(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -242,7 +242,7 @@ def parse_host_vulns(workbook, scanner, scans, config_file=None):
                     table_headers, table_data)
 
 
-def parse_vuln_hosts(workbook, scanner, scans, config_file=None):
+def write_vuln_hosts(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -286,7 +286,7 @@ def parse_vuln_hosts(workbook, scanner, scans, config_file=None):
                     table_headers, table_data)
 
 
-def parse_vulns(workbook, scanner, scans, config_file=None):
+def write_vulns(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -330,7 +330,7 @@ def parse_vulns(workbook, scanner, scans, config_file=None):
                     table_headers, table_data)
 
 
-def parse_nessus_host_os(workbook, scanner, scans):
+def write_nessus_host_os(workbook, scanner, scans):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -357,7 +357,7 @@ def parse_nessus_host_os(workbook, scanner, scans):
     write_worksheet(workbook, "Hosts vs OS", 2, table_headers, table_data)
 
 
-def parse_nessus_os_hosts(workbook, scanner, scans):
+def write_nessus_os_hosts(workbook, scanner, scans):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -388,7 +388,7 @@ def parse_nessus_os_hosts(workbook, scanner, scans):
     write_worksheet(workbook, "OS vs Hosts", 2, table_headers, table_data)
 
 
-def parse_host_services(workbook, input_files):
+def write_host_services(workbook, input_files):
     table_data = []
     table_headers = [
         {"header": "File"},
@@ -423,7 +423,7 @@ def parse_host_services(workbook, input_files):
                     table_headers, table_data)
 
 
-def parse_nmap_host_os(workbook, input_files):
+def write_nmap_host_os(workbook, input_files):
     table_data = []
     table_headers = [
         {"header": "File"},
@@ -448,7 +448,7 @@ def parse_nmap_host_os(workbook, input_files):
     write_worksheet(workbook, "Hosts vs OS", 2, table_headers, table_data)
 
 
-def parse_nmap_os_hosts(workbook, input_files):
+def write_nmap_os_hosts(workbook, input_files):
     table_data = []
     table_headers = [
         {"header": "File"},
@@ -569,26 +569,26 @@ def main():
                         RESULT,
                         "generating 'Hosts vs Vulnerabilities' worksheet..."
                     )
-                    parse_host_vulns(
+                    write_host_vulns(
                         workbook, scanner, scans, config_file=args.config_file
                     )
                     logging.log(
                         RESULT,
                         "generating 'Vulnerabilities vs Hosts' worksheet..."
                     )
-                    parse_vuln_hosts(
+                    write_vuln_hosts(
                         workbook, scanner, scans, config_file=args.config_file
                     )
                     logging.log(
                         RESULT,
                         "generating 'Hosts vs OS' worksheet..."
                     )
-                    parse_nessus_host_os(workbook, scanner, scans)
+                    write_nessus_host_os(workbook, scanner, scans)
                     logging.log(
                         RESULT,
                         "generating 'OS vs Hosts' worksheet..."
                     )
-                    parse_nessus_os_hosts(workbook, scanner, scans)
+                    write_nessus_os_hosts(workbook, scanner, scans)
                     workbook.close()
 
         elif args.subcommand == "nmap":
@@ -605,11 +605,11 @@ def main():
 
             workbook = xlsxwriter.Workbook("{}".format(output_file))
             logging.log(RESULT, "generating 'Hosts vs Services' worksheet...")
-            parse_host_services(workbook, input_files)
+            write_host_services(workbook, input_files)
             logging.log(RESULT, "generating 'Hosts vs OS' worksheet...")
-            parse_nmap_host_os(workbook, input_files)
+            write_nmap_host_os(workbook, input_files)
             logging.log(RESULT, "generating 'OS vs Hosts' worksheet...")
-            parse_nmap_os_hosts(workbook, input_files)
+            write_nmap_os_hosts(workbook, input_files)
             workbook.close()
     except KeyboardInterrupt:
         logging.exception("'CTRL+C' pressed, exiting...")
