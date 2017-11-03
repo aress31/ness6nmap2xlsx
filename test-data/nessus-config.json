@@ -1,0 +1,8 @@
+{
+    "34460": {
+        "description": "foo",
+        "enable": true,
+        "plugin_name": "bar",
+        "severity": 666
+    }
+}
