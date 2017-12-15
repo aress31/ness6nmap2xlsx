@@ -32,13 +32,13 @@ def get_host_services(input_file):
 
                 services.append(
                     {
-                        "banner": service.banner,
-                        "file": input_file,
-                        "port": service.port,
+                        "banner":   service.banner,
+                        "file":     input_file,
+                        "port":     service.port,
                         "protocol": service.protocol,
-                        "reason": service.reason,
-                        "service": service.service,
-                        "state": service.state
+                        "reason":   service.reason,
+                        "service":  service.service,
+                        "state":    service.state
                     }
                 )
 
@@ -58,10 +58,9 @@ def get_host_os(input_file):
 
             # the first match has the highest accuracy
             if operating_systems:
-                results[host_ip] = {
-                        "file": input_file,
-                        "host_ip": host.address,
-                        "name": operating_systems[0].name,
+                results[host.address] = {
+                        "file":     input_file,
+                        "name":     operating_systems[0].name,
                         "accuracy": operating_systems[0].accuracy
                 }
         else:
@@ -94,8 +93,8 @@ def get_os_hosts(input_file):
                     )
                 else:
                     results[operating_systems[0].name] = {
-                            "file": [input_file],
-                            "host_ip": [host.address],
+                            "file":     [input_file],
+                            "host_ip":  [host.address],
                     }
         else:
             logging.debug(

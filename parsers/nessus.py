@@ -127,16 +127,14 @@ def get_host_vulns(scanner, scan):
             plugin_output = get_plugin_output(scanner, scan, data)
             results[host["host_id"]][data["plugin_id"]] = []
 
-            for port in plugin_output["port"]:
-                results[host["host_id"]][data["plugin_id"]].append({
-                    "CVE": plugin_output["CVE"],
-                    "host_ip": host_ip,
-                    "hostname": data["hostname"],
-                    "plugin_name": data["plugin_name"],
-                    "port": port,
-                    "scan": scan["name"],
-                    "severity": data["severity"]
-                })
+            results[host["host_id"]][data["plugin_id"]].append({
+                "host_ip":          host_ip,
+                "hostname":         data["hostname"],
+                "plugin_name":      data["plugin_name"],
+                "plugin_output":    plugin_output,
+                "scan":             scan["name"],
+                "severity":         data["severity"]
+            })
 
     return results
 
@@ -173,27 +171,27 @@ def get_vuln_hosts(scanner, scan):
                 results[data["plugin_id"]]["hostname"].extend(
                     [data["hostname"]]
                 )
-                results[data["plugin_id"]]["port"].extend(
-                    plugin_output["port"]
+                results[data["plugin_id"]]["plugin_output"].update(
+                    plugin_output
                 )
                 results[data["plugin_id"]]["scan"].extend(
                     [scan["name"]]
                 )
             else:
                 results[data["plugin_id"]] = {
-                    "CVE": plugin_output["CVE"],
-                    "host_id": [host["host_id"]],
-                    "host_ip": [host_ip],
-                    "hostname": [data["hostname"]],
-                    "plugin_name": data["plugin_name"],
-                    "port": plugin_output["port"],
-                    "scan": [scan["name"]],
-                    "severity": data["severity"]
+                    "host_id":          [host["host_id"]],
+                    "host_ip":          [host_ip],
+                    "hostname":         [data["hostname"]],
+                    "plugin_name":      data["plugin_name"],
+                    "plugin_output":    plugin_output,
+                    "scan":             [scan["name"]],
+                    "severity":         data["severity"]
                 }
 
     return results
 
 
+# Add test output
 def get_plugin_output(scanner, scan, data):
     ports = []
     results = {}
@@ -207,7 +205,9 @@ def get_plugin_output(scanner, scan, data):
         method="GET"
     )
 
-    for output in scanner.res["outputs"]:
+    outputs = scanner.res["outputs"]
+
+    for output in outputs:
         for key in output["ports"].keys():
             formatted_port = "{}/{}".format(
                 key.split("/")[0], key.split("/")[1].upper()
@@ -215,22 +215,17 @@ def get_plugin_output(scanner, scan, data):
             ports.append(formatted_port)
 
     # a more elegant method than using a try-catch block?
+    plugin_ref = "N/A"
+    plugin_solution = "N/A"
+    plugin_synopsis = "N/A"
+
     try:
-        CVEs = []
-
         # plugin_description also contains the 'CVSS' information
-        plugin = scanner.res["info"]["plugindescription"]
-        plugin_ref = plugin["pluginattributes"]["ref_information"]["ref"]
-
-        for entry in plugin_ref:
-            # follow the schema below to add more reference sources
-            if entry["name"].upper() == "CVE":
-                CVEs.extend(entry["values"]["value"])
-            else:
-                continue
-                # logging.warning("unparsed reference: {} {}".format(
-                #     entry["name"].upper(), entry["values"]["value"]
-                # ))
+        pluginattributes = scanner.res["info"]["plugindescription"]["pluginattributes"]
+        plugin_description = pluginattributes["description"]        
+        plugin_ref = pluginattributes["ref_information"]["ref"]
+        plugin_solution = pluginattributes["solution"]
+        plugin_synopsis = pluginattributes["synopsis"]
 
     except KeyError as ex:
         pass
@@ -239,8 +234,11 @@ def get_plugin_output(scanner, scan, data):
         # ))
 
     results = {
-        "port": ports,
-        "CVE": CVEs
+        "ref":          plugin_ref,
+        "description":  plugin_description,
+        "ports":        ports,
+        "solution":     plugin_solution,
+        "synopsis":     plugin_synopsis
     }
 
     return results
@@ -364,10 +362,10 @@ def get_host_os(scanner, scan):
 
                 results[host["host_id"]] = {
                     "confidence_level": int(confidence_level),
-                    "host_ip": host_ip,
-                    "method": method,
+                    "host_ip":          host_ip,
+                    "method":           method,
                     "operating_system": operating_system,
-                    "scan": scan["name"]
+                    "scan":             scan["name"]
                 }
 
     return results
@@ -434,11 +432,11 @@ def get_os_hosts(scanner, scan):
                     )
                 else:
                     results[operating_system] = {
-                        "host_id": [host["host_id"]],
-                        "host_ip": [host_ip],
-                        "method": [method],
+                        "host_id":          [host["host_id"]],
+                        "host_ip":          [host_ip],
+                        "method":           [method],
                         "operating_system": operating_system,
-                        "scan": [scan["name"]]
+                        "scan":             [scan["name"]]
                     }
 
     return results
