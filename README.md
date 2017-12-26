@@ -1,5 +1,5 @@
-![ness6nmap_to_xlsx](images/ness6nmap_to_xlsx.png)
-# ness6nmap_to_xlsx
+![ness6nmap2xlsx](images/ness6nmap_to_xlsx.png)
+# ness6nmap2xlsx
 
 This script parses Nessus (via its API) and Nmap scans results into clear and complete Excel worksheets (XLSX) for quicker and easier reporting (useful when dealing with big scope).
 
