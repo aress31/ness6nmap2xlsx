@@ -1,4 +1,4 @@
-![ness6nmap2xlsx](images/ness6nmap_to_xlsx.png)
+![ness6nmap2xlsx](images/ness6nmap2xlsx.png)
 # ness6nmap2xlsx
 
 This script parses Nessus (via its API) and Nmap scans results into clear and complete Excel worksheets (XLSX) for quicker and easier reporting (useful when dealing with big scope).
@@ -17,7 +17,7 @@ The following worksheets are generated when parsing Nmap scans results:
 Note: The `Hosts vs OS` and `OS vs Hosts` worksheets are **only** generated when Nmap scans contain OS information (using the `-O` option in Nmap).
 
 ## Installation
-    $ git clone https://github.com/AresS31/ness6nmap_to_xlsx
+    $ git clone https://github.com/AresS31/ness6nmap2xlsx
     # python -m pip install -r ness6nmap_to_xlsx/requirements.txt
 
 ## Usage
@@ -78,7 +78,7 @@ This script offers the option to `enable` the processing of specific Nessus plug
 * Source code optimisation.
 
 ## Licenses
-### ness6nmap_to_xlsx
+### ness6nmap2xlsx
 Copyright (C) 2017 Alexandre Teyar
 
 Licensed under the Apache License, Version 2.0 (the "License");

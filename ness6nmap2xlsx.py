@@ -168,7 +168,8 @@ def parse_args():
 # adding column formula to convert 'severity' to 'text'
 def write_worksheet(workbook, worksheet, freeze_panes_count,
                     table_headers, table_data):
-    """ Create an Excel worksheet containing the 'table_headers' and 'table_data' dataset
+    """ Create an Excel worksheet containing the 'table_headers'
+        and 'table_data' dataset
     """
     if not table_data:
         logging.warning("'{}' has not been created - empty dataset".format(
@@ -207,7 +208,6 @@ def write_worksheet(workbook, worksheet, freeze_panes_count,
             worksheet.freeze_panes(0, i + 1)
 
 
-
 def parse_host_vulns(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
@@ -243,7 +243,7 @@ def parse_host_vulns(workbook, scanner, scans, config_file=None):
                     table_headers, table_data)
 
 
-def parse_vuln_hosts(workbook, document, scanner, scans, config_file=None):
+def parse_vuln_hosts(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -533,7 +533,9 @@ def main():
                         args.config_file.name
                     )
                 )
-            logging.info("XLSX results output_file: {}.xlsx".format(output_file))
+            logging.info("XLSX results output_file: {}.xlsx".format(
+                output_file
+            ))
 
             scanner = ness6rest.Scanner(
                 insecure=True,
@@ -565,8 +567,9 @@ def main():
                     scans = nessus.get_scans(scanner, args.scans)
 
                 if scans:
-                    document = Document()
-                    workbook = xlsxwriter.Workbook("{}.xlsx".format(output_file))
+                    workbook = xlsxwriter.Workbook("{}.xlsx".format(
+                        output_file
+                    ))
 
                     logging.log(
                         RESULT,
@@ -576,14 +579,12 @@ def main():
                         workbook, scanner, scans, config_file=args.config_file
                     )
 
-                    document.save("{}.docx".format(output_file))
-
                     logging.log(
                         RESULT,
                         "generating 'Vulnerabilities vs Hosts' worksheet..."
                     )
                     parse_vuln_hosts(
-                        workbook, document, scanner, scans, config_file=args.config_file
+                        workbook, scanner, scans, config_file=args.config_file
                     )
 
                     logging.log(

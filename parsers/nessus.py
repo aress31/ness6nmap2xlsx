@@ -222,7 +222,7 @@ def get_plugin_output(scanner, scan, data):
     try:
         # plugin_description also contains the 'CVSS' information
         pluginattributes = scanner.res["info"]["plugindescription"]["pluginattributes"]
-        plugin_description = pluginattributes["description"]        
+        plugin_description = pluginattributes["description"]
         plugin_ref = pluginattributes["ref_information"]["ref"]
         plugin_solution = pluginattributes["solution"]
         plugin_synopsis = pluginattributes["synopsis"]
