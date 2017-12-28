@@ -57,6 +57,7 @@ def parse_args():
 
     parser.add_argument(
         "-oX",
+        "-output--xml",
         dest="output_file",
         help="output results in XLSX to the given filename",
         required=False,
@@ -154,6 +155,7 @@ def parse_args():
 
     nmap_parser.add_argument(
         "-iX",
+        "--input-xml",
         dest="input_files",
         help="XML scan results files(s)",
         nargs="+",
@@ -208,12 +210,12 @@ def write_worksheet(workbook, worksheet, freeze_panes_count,
             worksheet.freeze_panes(0, i + 1)
 
 
-def parse_host_vulns(workbook, scanner, scans, config_file=None):
+def parse_ness_host_vulns(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
-        {"header": "Affected Host IP"},
-        {"header": "Affected Port"},
+        {"header": "Host IP"},
+        {"header": "Port"},
         {"header": "Vulnerability"},
         {"header": "Severity Rating"}
     ]
@@ -243,15 +245,15 @@ def parse_host_vulns(workbook, scanner, scans, config_file=None):
                     table_headers, table_data)
 
 
-def parse_vuln_hosts(workbook, scanner, scans, config_file=None):
+def parse_ness_vuln_hosts(workbook, scanner, scans, config_file=None):
     table_data = []
     table_headers = [
         {"header": "Scan"},
         {"header": "Vulnerability"},
         {"header": "IP Count"},
-        {"header": "Affected Host IP"},
+        {"header": "Host IP"},
         {"header": "Port Count"},
-        {"header": "Affected Port"},
+        {"header": "Port"},
         {"header": "Severity Rating"}
     ]
 
@@ -283,7 +285,7 @@ def parse_vuln_hosts(workbook, scanner, scans, config_file=None):
                 ]
             )
 
-    write_worksheet(workbook, "Vulnerabilities vs Hosts", 2,
+    write_worksheet(workbook, "Vulnerability vs Hosts", 2,
                     table_headers, table_data)
 
 
@@ -293,9 +295,9 @@ def parse_vulns(workbook, scanner, scans, config_file=None):
         {"header": "Scan"},
         {"header": "Vulnerability"},
         {"header": "IP Count"},
-        {"header": "Affected Host IP"},
+        {"header": "Host IP"},
         {"header": "Port Count"},
-        {"header": "Affected Port"},
+        {"header": "Port"},
         {"header": "Severity Rating"}
     ]
 
@@ -327,11 +329,11 @@ def parse_vulns(workbook, scanner, scans, config_file=None):
                 ]
             )
 
-    write_worksheet(workbook, "Vulnerabilities vs Hosts", 2,
+    write_worksheet(workbook, "Vulnerability vs Hosts", 2,
                     table_headers, table_data)
 
 
-def parse_nessus_host_os(workbook, scanner, scans):
+def parse_ness_host_oss(workbook, scanner, scans):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -342,7 +344,7 @@ def parse_nessus_host_os(workbook, scanner, scans):
     ]
 
     for scan in scans:
-        host_os = nessus.get_host_os(scanner, scan)
+        host_os = nessus.get_host_oss(scanner, scan)
 
         for value in host_os.values():
             table_data.append(
@@ -355,10 +357,10 @@ def parse_nessus_host_os(workbook, scanner, scans):
                 ]
             )
 
-    write_worksheet(workbook, "Hosts vs OS", 2, table_headers, table_data)
+    write_worksheet(workbook, "Host vs OSs", 2, table_headers, table_data)
 
 
-def parse_nessus_os_hosts(workbook, scanner, scans):
+def parse_ness_os_hosts(workbook, scanner, scans):
     table_data = []
     table_headers = [
         {"header": "Scan"},
@@ -389,7 +391,7 @@ def parse_nessus_os_hosts(workbook, scanner, scans):
     write_worksheet(workbook, "OS vs Hosts", 2, table_headers, table_data)
 
 
-def parse_host_services(workbook, input_files):
+def parse_nmap_host_services(workbook, input_files):
     table_data = []
     table_headers = [
         {"header": "File"},
@@ -420,11 +422,11 @@ def parse_host_services(workbook, input_files):
                     ]
                 )
 
-    write_worksheet(workbook, "Hosts vs Services", 2,
+    write_worksheet(workbook, "Host vs Services", 2,
                     table_headers, table_data)
 
 
-def parse_nmap_host_os(workbook, input_files):
+def parse_nmap_host_oss(workbook, input_files):
     table_data = []
     table_headers = [
         {"header": "File"},
@@ -434,7 +436,7 @@ def parse_nmap_host_os(workbook, input_files):
     ]
 
     for input_file in input_files:
-        host_os = nmap.get_host_os(input_file)
+        host_os = nmap.get_host_oss(input_file)
 
         for host_ip, value in sorted(host_os.items()):
             table_data.append(
@@ -446,7 +448,7 @@ def parse_nmap_host_os(workbook, input_files):
                 ]
             )
 
-    write_worksheet(workbook, "Hosts vs OS", 2, table_headers, table_data)
+    write_worksheet(workbook, "Host vs OSs", 2, table_headers, table_data)
 
 
 def parse_nmap_os_hosts(workbook, input_files):
@@ -573,30 +575,30 @@ def main():
 
                     logging.log(
                         RESULT,
-                        "generating 'Hosts vs Vulnerabilities' worksheet..."
+                        "generating 'Host vs Vulnerabilities' worksheet..."
                     )
-                    parse_host_vulns(
+                    parse_ness_host_vulns(
                         workbook, scanner, scans, config_file=args.config_file
                     )
 
                     logging.log(
                         RESULT,
-                        "generating 'Vulnerabilities vs Hosts' worksheet..."
+                        "generating 'Vulnerability vs Hosts' worksheet..."
                     )
-                    parse_vuln_hosts(
+                    parse_ness_vuln_hosts(
                         workbook, scanner, scans, config_file=args.config_file
                     )
 
                     logging.log(
                         RESULT,
-                        "generating 'Hosts vs OS' worksheet..."
+                        "generating 'Host vs OSs' worksheet..."
                     )
-                    parse_nessus_host_os(workbook, scanner, scans)
+                    parse_ness_host_oss(workbook, scanner, scans)
                     logging.log(
                         RESULT,
                         "generating 'OS vs Hosts' worksheet..."
                     )
-                    parse_nessus_os_hosts(workbook, scanner, scans)
+                    parse_ness_os_hosts(workbook, scanner, scans)
 
                     workbook.close()
 
@@ -613,10 +615,10 @@ def main():
             logging.info("XLSX results file: {}.xlsx".format(output_file))
 
             workbook = xlsxwriter.Workbook("{}.xlsx".format(output_file))
-            logging.log(RESULT, "generating 'Hosts vs Services' worksheet...")
-            parse_host_services(workbook, input_files)
-            logging.log(RESULT, "generating 'Hosts vs OS' worksheet...")
-            parse_nmap_host_os(workbook, input_files)
+            logging.log(RESULT, "generating 'Host vs Services' worksheet...")
+            parse_nmap_host_services(workbook, input_files)
+            logging.log(RESULT, "generating 'Host vs OSs' worksheet...")
+            parse_nmap_host_oss(workbook, input_files)
             logging.log(RESULT, "generating 'OS vs Hosts' worksheet...")
             parse_nmap_os_hosts(workbook, input_files)
 

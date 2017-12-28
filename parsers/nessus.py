@@ -309,7 +309,7 @@ def post_process_vulns(config_file, data, type=None):
     return data
 
 
-def get_host_os(scanner, scan):
+def get_host_oss(scanner, scan):
     results = {}
 
     scanner.action(

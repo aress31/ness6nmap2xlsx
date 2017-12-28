@@ -1,28 +1,28 @@
 ![ness6nmap2xlsx](images/ness6nmap2xlsx.png)
 # ness6nmap2xlsx
 
-This script parses Nessus (via its API) and Nmap scans results into clear and complete Excel worksheets (XLSX) for quicker and easier reporting (useful when dealing with big scope).
+This script parses `Nessus` (via its API) and `Nmap` scans results into `Excel` tables (`.xlsx`) to facilitate the reporting process of penetration tests, especially useful when dealing with big scope. Having scans results organised in `Excel` tables also allow customers and testers to use `Excel` strong filtering capabilities.
 
 The following worksheets are generated when parsing Nessus scans results:
-* `Hosts vs Vulnerabilities`
-* `Vulnerabilities vs Hosts`
-* `Hosts vs OS`
+* `Host vs Vulnerabilities`
+* `Vulnerability vs Hosts`
+* `Host vs OSs`
 * `OS vs Hosts`
 
 The following worksheets are generated when parsing Nmap scans results:
-* `Hosts vs Services`
-* `Hosts vs OS`
+* `Host vs Services`
+* `Host vs OSs`
 * `OS vs Hosts`
 
-Note: The `Hosts vs OS` and `OS vs Hosts` worksheets are **only** generated when Nmap scans contain OS information (using the `-O` option in Nmap).
+Note: The `Host vs OSs` and `OS vs Hosts` worksheets are **only** generated when Nmap scans contain OS information, when using the `-O` option in `Nmap`.
 
 ## Installation
     $ git clone https://github.com/AresS31/ness6nmap2xlsx
-    # python -m pip install -r ness6nmap_to_xlsx/requirements.txt
+    # python -m pip install -r ness6nmap2xlsx/requirements.txt
 
 ## Usage
 ### Generic usage
-    $ python ness6nmap_to_xlsx.py [-h] [-d] [-oX OUTPUT_FILE] {nessus,nmap} ...
+    $ python ness6nmap2xlsx.py [-h] [-d] [-oX OUTPUT_FILE] {nessus,nmap} ...
     
     positional arguments:
       {nessus,nmap}
@@ -33,7 +33,7 @@ Note: The `Hosts vs OS` and `OS vs Hosts` worksheets are **only** generated when
       -oX OUTPUT_FILE  output results in XLSX to the given filename
 
 ### Nessus usage
-    $ python ness6nmap_to_xlsx.py nessus [-h] [-c CONFIG_FILE] [-f FOLDERS [FOLDERS ...]] [--host HOST] -l LOGIN [--list {folders,scans}] -p PASSWORD [--port PORT] [-s SCANS [SCANS ...]]
+    $ python ness6nmap2xlsx.py nessus [-h] [-c CONFIG_FILE] [-f FOLDERS [FOLDERS ...]] [--host HOST] -l LOGIN [--list {folders,scans}] -p PASSWORD [--port PORT] [-s SCANS [SCANS ...]]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -65,7 +65,7 @@ This script offers the option to `enable` the processing of specific Nessus plug
 ```
 
 ### Nmap usage
-    $ ness6nmap_to_xlsx.py nmap [-h] -iX INPUT_FILES [INPUT_FILES ...]
+    $ ness6nmap2xlsx.py nmap [-h] -iX INPUT_FILES [INPUT_FILES ...]
 
     optional arguments:
       -h, --help            show this help message and exit

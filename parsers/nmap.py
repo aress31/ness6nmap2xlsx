@@ -47,7 +47,7 @@ def get_host_services(input_file):
     return results
 
 
-def get_host_os(input_file):
+def get_host_oss(input_file):
     results = {}
 
     nmap = NmapParser.parse_fromfile(input_file)
