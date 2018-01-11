@@ -19,40 +19,46 @@ The following worksheets are generated when parsing Nmap scans results:
 Note: The `Host vs OSs` and `OS vs Hosts` worksheets are **only** generated when Nmap scans contain OS information, when using the `-O` option in `Nmap`.
 
 ## Installation
-    $ git clone https://github.com/AresS31/ness6nmap2xlsx
-    # python -m pip install -r ness6nmap2xlsx/requirements.txt
+```
+$ git clone https://github.com/AresS31/ness6nmap2xlsx
+# python -m pip install -r ness6nmap2xlsx/requirements.txt
+```
 
 ## Usage
 ### Generic usage
-    $ python ness6nmap2xlsx.py [-h] [-d] [-oX OUTPUT_FILE] {nessus,nmap} ...
-    
-    positional arguments:
-      {nessus,nmap}
+```
+$ python ness6nmap2xlsx.py [-h] [-d] [-oX OUTPUT_FILE] {nessus,nmap} ...
 
-    optional arguments:
-      -h, --help       show this help message and exit
-      -d, --debug      enable debug output
-      -oX OUTPUT_FILE  output results in XLSX to the given filename
+positional arguments:
+  {nessus,nmap}
+
+optional arguments:
+  -h, --help       show this help message and exit
+  -d, --debug      enable debug output
+  -oX OUTPUT_FILE  output results in XLSX to the given filename
+```
 
 ### Nessus usage
-    $ python ness6nmap2xlsx.py nessus [-h] [-c CONFIG_FILE] [-f FOLDERS [FOLDERS ...]] [--host HOST] -l LOGIN [--list {folders,scans}] -p PASSWORD [--port PORT] [-s SCANS [SCANS ...]]
+```
+$ python ness6nmap2xlsx.py nessus [-h] [-c CONFIG_FILE] [-f FOLDERS [FOLDERS ...]] [--host HOST] -l LOGIN [--list {folders,scans}] -p PASSWORD [--port PORT] [-s SCANS [SCANS ...]]
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -c CONFIG_FILE, --config CONFIG_FILE
-                            Configuration file for custom vulnerabilities
-      -f FOLDERS [FOLDERS ...], --folders FOLDERS [FOLDERS ...]
-                            folder(s) to process (support regular expressions)
-      --host HOST           hostname (default value: localhost)
-      -l LOGIN, --login LOGIN
-                            login for Nessus authentication
-      --list {folders,scans}
-                            list folder(s) or scan(s) (support regular expressions)
-      -p PASSWORD, --password PASSWORD
-                            password for Nessus authentication
-      --port PORT           port (default value: 8834)
-      -s SCANS [SCANS ...], --scans SCANS [SCANS ...]
-                            scan(s) to process (support regular expressions)
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config CONFIG_FILE
+                        Configuration file for custom vulnerabilities
+  -f FOLDERS [FOLDERS ...], --folders FOLDERS [FOLDERS ...]
+                        folder(s) to process (support regular expressions)
+  --host HOST           hostname (default value: localhost)
+  -l LOGIN, --login LOGIN
+                        login for Nessus authentication
+  --list {folders,scans}
+                        list folder(s) or scan(s) (support regular expressions)
+  -p PASSWORD, --password PASSWORD
+                        password for Nessus authentication
+  --port PORT           port (default value: 8834)
+  -s SCANS [SCANS ...], --scans SCANS [SCANS ...]
+                        scan(s) to process (support regular expressions)
+```
 
 This script offers the option to `enable` the processing of specific Nessus plugins. It also offers the option to override their `name`, `description` and `severity` with custom values using a JSON file formatted as follows (the JSON key, in this case `34460`, corresponds to the `plugin id`):
 ```json
@@ -67,12 +73,14 @@ This script offers the option to `enable` the processing of specific Nessus plug
 ```
 
 ### Nmap usage
-    $ ness6nmap2xlsx.py nmap [-h] -iX INPUT_FILES [INPUT_FILES ...]
+```
+$ ness6nmap2xlsx.py nmap [-h] -iX INPUT_FILES [INPUT_FILES ...]
 
-    optional arguments:
-      -h, --help            show this help message and exit
-      -iX INPUT_FILES [INPUT_FILES ...]
-                            XML scan results files(s)
+optional arguments:
+  -h, --help            show this help message and exit
+  -iX INPUT_FILES [INPUT_FILES ...]
+                        XML scan results files(s)
+```
 
 ## Possible Improvements
 - [ ] Adding new features.
