@@ -75,9 +75,9 @@ This script offers the option to `enable` the processing of specific Nessus plug
                             XML scan results files(s)
 
 ## Possible Improvements
-* Adding new features.
-* Adding new relevant worksheets.
-* Source code optimisation.
+- [ ] Adding new features.
+- [ ] Adding new relevant worksheets.
+- [ ] Source code optimisation.
 
 ## Licenses
 ### ness6nmap2xlsx
