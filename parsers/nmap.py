@@ -12,8 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 #    limitations under the License.
+
 # TODO:
-# * add a Service vs Hosts worksheet
+# * add a "Service vs Hosts" worksheet
 
 from libnmap.parser import NmapParser
 from .parser import Parser
@@ -31,28 +32,18 @@ class Nmap(Parser):
             sorted([x.name for x in self._input_files])))
         logging.info("output file: {}".format(self._output_file))
 
-    def draw_table(self, worksheet, table_headers, table_data):
-        column_count = 0
-        row_count = 0
-        table_column_count = column_count + len(table_headers) - 1
-        table_row_count = row_count + len(table_data)
+    def parse(self):
+        logging.info("generating worksheet 'Host vs Services'...")
+        self.parse_host_services()
+        logging.info("generating worksheet 'Host vs OSs'...")
+        self.parse_host_oss()
+        logging.info("generating worksheet 'OS vs Hosts'...")
+        self.parse_os_hosts()
 
-        logging.debug("{}".format(table_headers))
-        logging.debug("{}".format(table_data))
-
-        worksheet.add_table(
-            row_count,
-            column_count,
-            table_row_count,
-            table_column_count,
-            {
-                "banded_rows": True,
-                "columns": table_headers,
-                "data": table_data,
-                "first_column": True,
-                "style": "Table Style Medium 1"
-            }
-        )
+        try:
+            self._workbook.close()
+        except Exception as e:
+            logging.exception("{}".format(e))
 
     def parse_host_services(self):
         table_data = []
@@ -143,10 +134,10 @@ class Nmap(Parser):
         self.draw_table(worksheet, table_headers, table_data)
 
 
-def get_host_services(filepath):
+def get_host_services(file):
     results = {}
 
-    nmap = NmapParser.parse_fromfile(filepath)
+    nmap = NmapParser.parse_fromfile(file)
 
     for host in nmap.hosts:
         if host.is_up():
@@ -158,7 +149,7 @@ def get_host_services(filepath):
                 services.append(
                     {
                         "banner":   service.banner,
-                        "file":     filepath,
+                        "file":     file,
                         "port":     service.port,
                         "protocol": service.protocol,
                         "reason":   service.reason,
@@ -172,10 +163,10 @@ def get_host_services(filepath):
     return results
 
 
-def get_host_oss(filepath):
+def get_host_oss(file):
     results = {}
 
-    nmap = NmapParser.parse_fromfile(filepath)
+    nmap = NmapParser.parse_fromfile(file)
 
     for host in nmap.hosts:
         if host.is_up() and host.os_fingerprinted:
@@ -184,7 +175,7 @@ def get_host_oss(filepath):
             # the first match has the highest accuracy
             if operating_systems:
                 results[host.address] = {
-                        "file":     filepath,
+                        "file":     file,
                         "name":     operating_systems[0].name,
                         "accuracy": operating_systems[0].accuracy
                 }
@@ -198,10 +189,10 @@ def get_host_oss(filepath):
     return results
 
 
-def get_os_hosts(filepath):
+def get_os_hosts(file):
     results = {}
 
-    nmap = NmapParser.parse_fromfile(filepath)
+    nmap = NmapParser.parse_fromfile(file)
 
     for host in nmap.hosts:
         if host.is_up() and host.os_fingerprinted:
@@ -211,14 +202,14 @@ def get_os_hosts(filepath):
                 # the first match has the highest accuracy
                 if operating_systems[0].name in list(results.keys()):
                     results[operating_systems[0].name]["file"].extend(
-                        [filepath]
+                        [file]
                     )
                     results[operating_systems[0].name]["host_ip"].extend(
                         [host.address]
                     )
                 else:
                     results[operating_systems[0].name] = {
-                            "file":     [filepath],
+                            "file":     [file],
                             "host_ip":  [host.address],
                     }
         else:

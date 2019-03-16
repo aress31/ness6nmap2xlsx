@@ -30,14 +30,14 @@ certificates = {
     }
 }
 
-protocols = sorted([
+protocols = [
     "SSLv2",
     "SSLv3",
     "TLS1",
     "TLS1_1",
     "TLS1_2",
     "TLS1_3"
-])
+]
 
 vulnerabilities = {
     "BEAST": {

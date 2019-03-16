@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 #    limitations under the License.
 
+# TODO:
+# * try to add the constant part of the code (workbook closing) to the
+#   abstract method
+
 from abc import ABC, abstractmethod
 
 import logging
@@ -27,6 +31,10 @@ class Parser(object):
 
     @abstractmethod
     def print_vars(self):
+        pass
+
+    @abstractmethod
+    def parse(self):
         pass
 
     def draw_table(self, worksheet, table_headers, table_data):

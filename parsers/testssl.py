@@ -13,13 +13,16 @@
 # See the License for the specific language governing permissions and
 #    limitations under the License.
 
+# TODO:
+# * fix error when no table_data is passed to draw_table
+# * maybe add a File column
+
 from .parser import Parser
 from .testssl_config import *
 
 import json
 import logging
 import xlsxwriter
-import sys
 
 
 class Testssl(Parser):
@@ -32,9 +35,29 @@ class Testssl(Parser):
         logging.info("output file: {}".format(self._output_file))
         logging.info("certificate issue(s) to process: {}".format(
             sorted(certificates.keys())))
-        logging.info("protocol(s) to process: {}".format(protocols))
+        logging.info("protocol(s) to process: {}".format(
+            sorted(protocols)))
         logging.info("vulnerability/ies to process: {}".format(
             sorted(vulnerabilities.keys())))
+
+    def parse(self):
+        logging.info("generating worksheet 'Host vs Certificate'...")
+        self.parse_host_certificate()
+        logging.info("generating worksheet 'Host vs Certificates'...")
+        self.parse_host_certificates()
+        logging.info("generating worksheet 'Host vs Protocol'...")
+        self.parse_host_protocol()
+        logging.info("generating worksheet 'Host vs Protocols'...")
+        self.parse_host_protocols()
+        logging.info("generating worksheet 'Host vs Vulnerability'...")
+        self.parse_host_vulnerability()
+        logging.info("generating worksheet 'Host vs Vulnerabilities'...")
+        self.parse_host_vulnerabilities()
+
+        try:
+            self._workbook.close()
+        except Exception as e:
+            logging.exception("{}".format(e))
 
     def parse_host_certificate(self):
         table_data = []
@@ -48,6 +71,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
@@ -82,6 +106,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
@@ -118,6 +143,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
@@ -152,6 +178,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
@@ -190,6 +217,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
@@ -229,6 +257,7 @@ class Testssl(Parser):
 
         try:
             for input_file in self._input_files:
+                input_file.seek(0)
                 data = json.load(input_file)
 
                 for values in data["scanResult"]:
