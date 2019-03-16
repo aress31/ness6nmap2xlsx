@@ -15,6 +15,7 @@
 
 # TODO:
 # * add a "Service vs Hosts" worksheet
+# * decide whether to keep the file column or not
 
 from libnmap.parser import NmapParser
 from .parser import Parser

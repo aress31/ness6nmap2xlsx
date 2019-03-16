@@ -15,7 +15,7 @@
 
 # TODO:
 # * fix error when no table_data is passed to draw_table
-# * maybe add a File column
+# * decide whether to keep the file column or not
 
 from .parser import Parser
 from .testssl_config import *

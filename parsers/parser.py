@@ -46,16 +46,20 @@ class Parser(object):
         logging.debug("{}".format(table_headers))
         logging.debug("{}".format(table_data))
 
-        worksheet.add_table(
-            row_count,
-            column_count,
-            table_row_count,
-            table_column_count,
-            {
-                "banded_rows": True,
-                "columns": table_headers,
-                "data": table_data,
-                "first_column": True,
-                "style": "Table Style Medium 1"
-            }
-        )
+        if table_data:
+            worksheet.add_table(
+                row_count,
+                column_count,
+                table_row_count,
+                table_column_count,
+                {
+                    "banded_rows": True,
+                    "columns": table_headers,
+                    "data": table_data,
+                    "first_column": True,
+                    "style": "Table Style Medium 1"
+                }
+            )
+        else:
+            logging.warning(
+                "parsing the input file(s) resulted in an empty dataset")
