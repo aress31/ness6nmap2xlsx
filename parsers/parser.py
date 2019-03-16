@@ -13,14 +13,41 @@
 # See the License for the specific language governing permissions and
 #    limitations under the License.
 
-import abc
+from abc import ABC, abstractmethod
+
+import logging
+import xlsxwriter
 
 
 class Parser(object):
-    def __init__(self, input_files, workbook):
+    def __init__(self, input_files, output_file):
         self._input_files = input_files
-        self._workbook = workbook
+        self._output_file = output_file
+        self._workbook = xlsxwriter.Workbook("{}".format(output_file))
 
-    @abc.abstractmethod
-    def draw_table(self, input):
+    @abstractmethod
+    def print_vars(self):
         pass
+
+    def draw_table(self, worksheet, table_headers, table_data):
+        column_count = 0
+        row_count = 0
+        table_column_count = column_count + len(table_headers) - 1
+        table_row_count = row_count + len(table_data)
+
+        logging.debug("{}".format(table_headers))
+        logging.debug("{}".format(table_data))
+
+        worksheet.add_table(
+            row_count,
+            column_count,
+            table_row_count,
+            table_column_count,
+            {
+                "banded_rows": True,
+                "columns": table_headers,
+                "data": table_data,
+                "first_column": True,
+                "style": "Table Style Medium 1"
+            }
+        )

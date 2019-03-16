@@ -1,4 +1,4 @@
-#    Copyright (C) 2017 Alexandre Teyar
+#    Copyright (C) 2017 - 2019 Alexandre Teyar
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,152 @@ import json
 import logging
 import re
 import sys
+import xlsxwriter
 
 from collections import defaultdict
+
+
+class Ness6rest(Parser):
+    def __init__(self, config_file=None, input_files, output_files, scans, scanner):
+        super(Ness6rest, self).__init__(input_files, output_files)
+        self._config_file = config_file
+        self._scans = scans
+        self._scanner = scanner
+
+    def parse_host_vulns(self):
+        table_data = []
+        table_headers = [
+            {"header": "Scan"},
+            {"header": "Host IP"},
+            {"header": "Port"},
+            {"header": "Vulnerability"},
+            {"header": "Severity Rating"}
+        ]
+
+        for scan in self._scans:
+            host_vulns = nessus.get_host_vulns(self._scanner, scan)
+
+            if self._config_file:
+                host_vulns = nessus.post_process_vulns(
+                    self._config_file, host_vulns, type=0
+                )
+
+            for host_id, plugin_id in host_vulns.items():
+                for plugin_id, values in plugin_id.items():
+                    for value in values:
+                        table_data.append(
+                            [
+                                value["scan"],
+                                value["host_ip"],
+                                ";".join(value["plugin_output"]["ports"]),
+                                value["plugin_name"],
+                                value["severity"]
+                            ]
+                        )
+
+        worksheet = self._workbook.add_worksheet("Hosts vs Vulnerabilties")
+        draw_table(worksheet, table_headers, table_data)
+
+    def parse_vuln_hosts(self):
+        table_data = []
+        table_headers = [
+            {"header": "Scan"},
+            {"header": "Vulnerability"},
+            {"header": "IP Count"},
+            {"header": "Host IP"},
+            {"header": "Port Count"},
+            {"header": "Port"},
+            {"header": "Severity Rating"}
+        ]
+
+        for scan in self._scans:
+            vuln_hosts = nessus.get_vuln_hosts(self._scanner, scan)
+
+            if self._config_file:
+                vuln_hosts = nessus.post_process_vulns(
+                    self._config_file, vuln_hosts, type=1
+                )
+
+            for value in vuln_hosts.values():
+                # unify, sort and stringify
+                table_data.append(
+                    [
+                        ";".join(sorted(set(value["scan"]))),
+                        value["plugin_name"],
+                        len(value["host_ip"]),
+                        ";".join(sorted(
+                            set(value["host_ip"]),
+                            key=lambda x: tuple(map(int, x.split('.')))
+                        )),
+                        len(set(value["plugin_output"]["ports"])),
+                        ";".join(sorted(
+                            set(value["plugin_output"]["ports"]),
+                            key=lambda x: int(x.split("/")[0])
+                        )),
+                        value["severity"]
+                    ]
+                )
+
+        worksheet = self._workbook.add_worksheet("Vulnerability vs Hosts")
+        draw_table(worksheet, table_headers, table_data)
+
+    def parse_host_oss(self):
+        table_data = []
+        table_headers = [
+            {"header": "Scan"},
+            {"header": "Host IP"},
+            {"header": "Operating System"},
+            {"header": "Confidence Level"},
+            {"header": "Method"},
+        ]
+
+        for scan in self._scans:
+            host_os = nessus.get_host_oss(self._scanner, scan)
+
+            for value in host_os.values():
+                table_data.append(
+                    [
+                        value["scan"],
+                        value["host_ip"],
+                        value["operating_system"],
+                        value["confidence_level"],
+                        value["method"]
+                    ]
+                )
+
+        worksheet = self._workbook.add_worksheet("Host vs OSs")
+        draw_table(worksheet, table_headers, table_data)
+
+    def parse_os_hosts(self):
+        table_data = []
+        table_headers = [
+            {"header": "Scan"},
+            {"header": "Operating System"},
+            {"header": "Host IP Count"},
+            {"header": "Host IP"},
+            {"header": "Method"}
+        ]
+
+        for scan in self._scans:
+            os_hosts = nessus.get_os_hosts(self._scanner, scan)
+
+            for operating_system, value in sorted(os_hosts.items()):
+                # unify, sort and stringify
+                table_data.append(
+                    [
+                        ";".join(sorted(set(value["scan"]))),
+                        operating_system,
+                        len(value["host_ip"]),
+                        ";".join(sorted(
+                            set(value["host_ip"]),
+                            key=lambda x: tuple(map(int, x.split('.')))
+                        )),
+                        ";".join(sorted(set(value["method"])))
+                    ]
+                )
+
+        worksheet = self._workbook.add_worksheet("OS vs Hosts")
+        draw_table(worksheet, table_headers, table_data)
 
 
 def get_all_folders(scanner):

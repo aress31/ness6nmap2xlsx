@@ -12,18 +12,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 #    limitations under the License.
+# TODO:
+# * add a Service vs Hosts worksheet
 
 from libnmap.parser import NmapParser
 from .parser import Parser
 
 import logging
+import xlsxwriter
 
 
 class Nmap(Parser):
-    def __init__(self, input_files, workbook):
-        super(Parser, self).__init__()
-        self._input_files = input_files
-        self._workbook = workbook
+    def __init__(self, input_files, output_file):
+        super(Nmap, self).__init__(input_files, output_file)
+
+    def print_vars(self):
+        logging.info("input file(s): {}".format(
+            sorted([x.name for x in self._input_files])))
+        logging.info("output file: {}".format(self._output_file))
 
     def draw_table(self, worksheet, table_headers, table_data):
         column_count = 0

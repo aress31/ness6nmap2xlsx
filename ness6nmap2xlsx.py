@@ -16,9 +16,11 @@
 from nessrest import ness6rest
 # from parsers.ness6rest import ness6rest
 from parsers.nmap import Nmap
+from parsers.testssl import Testssl
 
 import argparse
 import logging
+# sys is superfluous
 import sys
 import time
 import xlsxwriter
@@ -64,13 +66,13 @@ def parse_args():
     subparsers.required = True
 
     # Nessus subparser
-    ness6rest_parser = subparsers.add_parser("ness6rest")
+    ness6rest_subparser = subparsers.add_parser("ness6rest")
 
-    ness6rest_exclusion_group = ness6rest_parser.add_mutually_exclusive_group(
+    ness6rest_exclusion_group = ness6rest_subparser.add_mutually_exclusive_group(
         required=False
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "-c",
         "--config",
         dest="config_file",
@@ -87,7 +89,7 @@ def parse_args():
         type=str
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "--host",
         default="localhost",
         dest="host",
@@ -96,7 +98,7 @@ def parse_args():
         type=str
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "-l",
         "--login",
         dest="login",
@@ -105,7 +107,7 @@ def parse_args():
         type=str
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "--list",
         choices=[
             "folders",
@@ -117,7 +119,7 @@ def parse_args():
         type=str
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "-p",
         "--password",
         dest="password",
@@ -126,7 +128,7 @@ def parse_args():
         type=str
     )
 
-    ness6rest_parser.add_argument(
+    ness6rest_subparser.add_argument(
         "--port",
         default="8834",
         dest="port",
@@ -144,9 +146,9 @@ def parse_args():
         type=str
     )
 
-    nmap_parser = subparsers.add_parser("nmap")
+    nmap_subparser = subparsers.add_parser("nmap")
 
-    nmap_parser.add_argument(
+    nmap_subparser.add_argument(
         "-iX",
         "--input-xml",
         dest="input_files",
@@ -154,6 +156,18 @@ def parse_args():
         nargs="+",
         required=True,
         type=argparse.FileType("r")
+    )
+
+    testssl_subparser = subparsers.add_parser("testssl")
+
+    testssl_subparser.add_argument(
+        "-iJ",
+        "--input-json",
+        dest="input_files",
+        help="input from testssl file(s) in JSON format",
+        nargs='+',
+        required=True,
+        type=argparse.FileType('r')
     )
 
     return parser.parse_args()
@@ -175,12 +189,6 @@ def print_ness6rest_vars():
             ))
 
     logging.info("output file: {}".format(args.output_file))
-
-
-def print_nmap_vars(input_files, output_file):
-    logging.info("input file(s): {}".format(
-        sorted([x.name for x in input_files])))
-    logging.info("output file: {}".format(output_file))
 
 
 def main():
@@ -208,6 +216,7 @@ def main():
             url="https://{}:{}".format(args.host, args.port)
         )
 
+        # implement as class method
         if args.list:
             if args.list == "folders":
                 if args.folders:
@@ -231,25 +240,29 @@ def main():
                 scans = nessus.get_scans(scanner, args.scans)
 
             if scans:
-                workbook = xlsxwriter.Workbook("{}".format(args.output_file))
+                ness6rest = Ness6rest(
+                    args.config_file, args.input_files,
+                    args.output_files, args.scans, scanner
+                )
 
                 logging.info("generating worksheet 'Host vs Vulnerabilities'...")
-                parse_ness_host_vulns(workbook, scanner, scans, config_file=args.config_file)
-                logging.info("generating 'Vulnerability vs Hosts' worksheet...")
-                parse_ness_vuln_hosts(workbook, scanner, scans, config_file=args.config_file)
+                ness6rest.parse_host_vulns()
+                logging.info("generating worksheet 'Vulnerability vs Hosts'...")
+                ness6rest.parse_vuln_hosts()
                 logging.info("generating worksheet 'Host vs OSs'...")
-                parse_ness_host_oss(workbook, scanner, scans)
+                ness6rest.parse_host_oss()
                 logging.info("generating worksheet 'OS vs Hosts'...")
-                parse_ness_os_hosts(workbook, scanner, scans)
+                ness6rest.parse_os_hosts()
 
-                workbook.close()
+                try:
+                    ness6rest._workbook.close()
+                except Exception as e:
+                    logging.exception("{}".format(e))
 
     elif args.subcommand == "nmap":
-        print_nmap_vars(args.input_files, args.output_file)
+        nmap = Nmap(args.input_files, args.output_file)
 
-        workbook = xlsxwriter.Workbook("{}".format(args.output_file))
-
-        nmap = Nmap(args.input_files, workbook)
+        nmap.print_vars()
 
         logging.info("generating worksheet 'Host vs Services'...")
         nmap.parse_host_services()
@@ -258,7 +271,34 @@ def main():
         logging.info("generating worksheet 'OS vs Hosts'...")
         nmap.parse_os_hosts()
 
-        workbook.close()
+        try:
+            nmap._workbook.close()
+        except Exception as e:
+            logging.exception("{}".format(e))
+
+    elif args.subcommand == "testssl":
+        testssl = Testssl(args.input_files, args.output_file)
+
+        testssl.print_vars()
+
+        logging.info("generating worksheet 'Host vs Certificate'...")
+        testssl.parse_host_certificate()
+        # sys.exit()
+        logging.info("generating worksheet 'Host vs Certificates'...")
+        testssl.parse_host_certificates()
+        logging.info("generating worksheet 'Host vs Protocol'...")
+        testssl.parse_host_protocol()
+        logging.info("generating worksheet 'Host vs Protocols'...")
+        testssl.parse_host_protocols()
+        logging.info("generating worksheet 'Host vs Vulnerability'...")
+        testssl.parse_host_vulnerability()
+        logging.info("generating worksheet 'Host vs Vulnerabilities'...")
+        testssl.parse_host_vulnerabilities()
+
+        try:
+            testssl._workbook.close()
+        except Exception as e:
+            logging.exception("{}".format(e))
 
 
 if __name__ == "__main__":
