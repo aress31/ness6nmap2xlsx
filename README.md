@@ -1,6 +1,6 @@
 <p align="center">
   <img alt="logo" src="images/ness6nmap2xlsx.png" height="200">
-  <h1>
+  <h1 align="center">
     ness6nmap2xlsx
   </h1>
   <p align="center">
