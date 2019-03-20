@@ -1,7 +1,17 @@
-![ness6nmap2xlsx](images/ness6nmap2xlsx.png)
-# ness6nmap2xlsx
-[![Language](https://img.shields.io/badge/Lang-Python-blue.svg)](https://www.python.org)
-[![License](https://img.shields.io/badge/License-Apache%202.0-red.svg)](https://opensource.org/licenses/Apache-2.0)
+<p align="center">
+  <img alt="logo" src="images/ness6nmap2xlsx.png" height="200">
+  <h1>
+    ness6nmap2xlsx
+  </h1>h1>
+  <p align="center">
+      <a href="https://www.python.org"><img alt="lang" src="https://img.shields.io/badge/Lang-Python-blue.svg"></a>
+      <a href="https://opensource.org/licenses/Apache-2.0"><img alt="license" src="https://img.shields.io/badge/License-Apache%202.0-red.svg"></a>
+      <br>
+      <img alt="bitcoin" src="https://img.shields.io/badge/Bitcoin-15aFaQaW9cxa4tRocax349JJ7RKyj7YV1p-yellow.svg">
+      <img alt="bitcoin cash" src="https://img.shields.io/badge/Bitcoin%20Cash-qqez5ed5wjpwq9znyuhd2hdg86nquqpjcgkm3t8mg3-yellow.svg">
+      <img alt="ether" src="https://img.shields.io/badge/Ether-0x70bC178EC44500C17B554E62BC31EA2B6251f64B-yellow.svg">
+  </p>
+</p>
 
 # This project has now been deprecated. Its functionality has been incorporated into [pentest2xlsx](https://github.com/AresS31/pentest2xlsx).
 
